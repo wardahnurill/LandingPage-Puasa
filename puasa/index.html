@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>myTahfidz - Petualangan Puasa Fatih</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-green: #27AE60;
+            --bg-light: #F0FDF4;
+            --soft-blue: #3498DB;
+            --orange: #F39C12;
+            --red: #E74C3C;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--bg-light);
+            margin: 0; padding: 0;
+            color: #2C3E50;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-green), #58D68D);
+            padding: 40px 20px;
+            text-align: center;
+            color: white;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative; /* Biar fatih-header bisa diposisi relatif ke sini */
+        }
+
+        .fatih-header {
+            width: 80px;
+            position: absolute;
+            left: 20px;
+            bottom: 10px;
+        }
+
+        h1 { font-family: 'Fredoka One', cursive; font-size: 2rem; margin: 0; }
+
+        .container { padding: 20px; max-width: 600px; margin: auto; }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 6px 0 #D1D8E0;
+            border: 1px solid #E2E8F0;
+            position: relative; /* Biar fatih-batal bisa nempel di pojok card */
+            overflow: hidden; /* Biar ilustrasi ga keluar batas card */
+        }
+
+        .card h2 {
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+            color: var(--primary-green);
+            margin-top: 0;
+        }
+
+        .icon-circle {
+            background: var(--primary-green);
+            color: white;
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin-right: 10px; font-size: 0.9rem;
+        }
+
+        .definition-box {
+            background: #EBF5FB;
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .grid-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .sub-card {
+            padding: 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+        }
+
+        .bg-blue { background: #E1F5FE; border-left: 5px solid var(--soft-blue); }
+        .bg-green { background: #E8F5E9; border-left: 5px solid var(--primary-green); }
+
+        /* Revisi Desain Danger List agar ada space buat gambar */
+        .danger-wrapper {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+        }
+
+        .danger-list {
+            background: #FDEDEC;
+            border: 2px dashed var(--red);
+            border-radius: 15px;
+            padding: 15px;
+            flex: 1;
+        }
+
+        .fatih-angry {
+            width: 90px;
+            margin-left: 10px;
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.1));
+        }
+
+        .tips-list {
+            background: #FFF9E6;
+            border-radius: 15px;
+            padding: 15px;
+        }
+
+        .btn-audio {
+            background: var(--primary-green);
+            color: white; border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            display: block; width: 100%;
+            margin-top: 10px;
+            font-family: 'Quicksand', sans-serif;
+            transition: transform 0.2s;
+        }
+
+        .btn-audio:active { transform: scale(0.98); }
+
+        .rayyan-card {
+            background: linear-gradient(to right, #FFD700, #FFA500);
+            color: white;
+            text-align: center;
+            border-radius: 20px;
+            padding: 20px;
+            font-weight: bold;
+        }
+
+        .fatih-talk {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 15px;
+            border-radius: 50px;
+            margin-top: 20px;
+            border: 2px solid var(--soft-blue);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <img src="assets/fatih-removebg-preview.png" alt="Fatih" class="fatih-header">
+        <h1>🌙 Pintar Puasa</h1>
+        <p>Belajar Bareng Fatih</p>
+    </header>
+
+    <div class="container">
+
+        <div class="card">
+            <h2><div class="icon-circle">1</div> Mengenal Puasa</h2>
+            <div class="definition-box">
+                <b>Puasa itu seperti mengistirahatkan perut kita. Kita menahan lapar dan haus dari Subuh sampai Maghrib.</b><br><br>
+                <b>Bukan cuma perut, hati dan lisan juga perlu kita jaga saat puasa!</b>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><div class="icon-circle">2</div> Siapa & Bagaimana?</h2>
+            <div class="grid-box">
+                <div class="sub-card bg-blue">
+                    <strong>Siapa yang Wajib?</strong><br>
+                    <ul style="padding-left: 15px; margin-top: 5px;">
+                        <li>Orang Muslim</li>
+                        <li>Sudah Besar</li>
+                        <li>Kuat</li>
+                    </ul>
+                </div>
+                <div class="sub-card bg-green">
+                    <strong>Biar Sah (Rukun)</strong><br>
+                    <ul style="padding-left: 15px; margin-top: 5px;">
+                        <li>Niat</li>
+                        <li>Menahan Diri</li>
+                    </ul>
+                </div>
+            </div>
+            <div style="margin-top: 15px; padding: 12px; background: #FFF4E3; border-radius: 15px; border: 1px solid #FFD1A4; display: flex; align-items: center;">
+                <span style="font-size: 1.5rem; margin-right: 10px;">🌟</span>
+                <p style="font-size: 0.85rem; margin: 0; line-height: 1.4;">
+                    "Walau kamu belum dewasa, yuk kita <b>mulai belajar latihan puasa</b>!"
+                </p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><div class="icon-circle">3</div> Awas, Puasa Bisa Batal!</h2>
+            <div class="danger-wrapper">
+                <div class="danger-list">
+                    <ul style="margin:0; padding-left: 20px;">
+                        <li>Makan/Minum sengaja</li>
+                        <li>Muntah sengaja</li>
+                        <li>Haid (Anak Perempuan)</li>
+                    </ul>
+                </div>
+                <img src="assets/marah.png" alt="Fatih Marah" class="fatih-angry">
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><div class="icon-circle">4</div> Biar Pahala Melimpah</h2>
+            <div class="tips-list">
+                <p>✨ <b>Sabar:</b> Jangan marah-marah ya.</p>
+                <p>✨ <b>Jujur:</b> Tidak boleh berbohong.</p>
+                <p>✨ <b>Sahur:</b> Makan biar kuat.</p>
+                <p>✨ <b>Berbuka:</b> Segerakan berbuka.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><div class="icon-circle">5</div> Yuk, Hafalin Doanya!</h2>
+            <strong>Niat Puasa (Malam Hari)</strong>
+            <button class="btn-audio" onclick="playFatih('niat.mp3')">Dengerin Suara Fatih 🔊</button>
+            <br>
+            <strong>Doa Berbuka</strong>
+            <button class="btn-audio" style="background-color: var(--soft-blue);" onclick="playFatih('buka.mp3')">Dengerin Suara Fatih 🔊</button>
+        </div>
+
+        <div class="rayyan-card">
+            🕌 HADIAH SPESIAL 🕌<br>
+            <p style="font-weight: normal; font-size: 0.9rem;">Siapa yang rajin puasa, nanti masuk surga lewat pintu keren namanya: <b>PINTU AR-RAYYAN!</b></p>
+        </div>
+
+        <div class="fatih-talk">
+            <span style="font-size: 2rem; margin-right: 10px;">👦</span>
+            <small>"Hebat! Kamu sudah selesai belajar. Semangat puasanya ya!"</small>
+        </div>
+
+    </div>
+
+    <div style="height: 50px;"></div>
+
+    <script>
+        function playFatih(file) {
+            let audio = new Audio('sound/' + file); 
+            audio.play().catch(function(error) {
+                alert("File suara " + file + " ga ketemu di folder 'sound'!");
+            });
+        }
+    </script>
+
+</body>
+</html>

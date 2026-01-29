@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Misi 100 Pahala Fatih</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sky-blue: #87CEEB;
+            --grass-green: #2ECC71;
+            --red: #E74C3C;
+            --orange: #F39C12;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--sky-blue);
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        #game-stage {
+            width: 100vw; height: 100vh;
+            position: relative;
+            background: linear-gradient(to bottom, #87CEEB, #E0F7FA);
+            will-change: transform;
+        }
+
+        .ui-header {
+            position: absolute; top: 20px; width: 100%;
+            display: flex; flex-direction: column; align-items: center; z-index: 100;
+        }
+
+        #score-container {
+            background: white; padding: 10px 25px; border-radius: 50px;
+            border: 4px solid var(--grass-green); box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        #progress-bar {
+            width: 200px; height: 12px; background: rgba(0,0,0,0.1);
+            border-radius: 10px; margin-top: 8px; overflow: hidden;
+        }
+
+        #progress-fill {
+            width: 0%; height: 100%; background: var(--grass-green);
+            transition: width 0.2s linear;
+        }
+
+        #fatih-player {
+            width: 85px; position: absolute; bottom: 65px;
+            left: 50%; transform: translateX(-50%);
+            z-index: 50; will-change: left;
+        }
+
+        .falling-item { 
+            position: absolute; font-size: 2.8rem; z-index: 40; 
+            pointer-events: none; will-change: top;
+        }
+
+        #overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); display: flex;
+            justify-content: center; align-items: center; z-index: 1000;
+            color: white; text-align: center;
+        }
+
+        .modal-content {
+            background: white; color: #333; padding: 25px;
+            border-radius: 25px; max-width: 85%; width: 320px;
+            box-shadow: 0 10px 0 rgba(0,0,0,0.1);
+        }
+
+        .btn-action {
+            background: var(--orange); color: white; border: none;
+            padding: 12px 35px; font-size: 1.2rem;
+            font-family: 'Fredoka One', cursive; border-radius: 50px;
+            cursor: pointer; margin-top: 15px; box-shadow: 0 5px 0 #D35400;
+        }
+
+        .btn-action:active { transform: translateY(3px); box-shadow: none; }
+
+        .reward-badge { font-size: 4rem; display: block; margin: 10px; animation: pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
+        
+        .ground { position: absolute; bottom: 0; width: 100%; height: 65px; background: var(--grass-green); }
+    </style>
+</head>
+<body>
+
+    <div id="game-stage">
+        <div class="ui-header">
+            <div id="score-container">
+                <span id="score-text" style="font-size: 1.3rem;">Pahala: 0 / 100</span>
+            </div>
+            <div id="progress-bar"><div id="progress-fill"></div></div>
+        </div>
+        <img src="assets/fatih-removebg-preview.png" id="fatih-player" alt="Fatih">
+        <div class="ground"></div>
+    </div>
+
+    <div id="overlay">
+        <div class="modal-content" id="modal-body">
+            <h1 style="font-family: 'Fredoka One'; color: var(--grass-green); margin-bottom: 5px;">MENCARI PAHALA BERSAMA</h1>
+            <p>Bantu Fatih kumpulkan 100 pahala!</p>
+            <img src="assets/fatih-removebg-preview.png" style="width: 100px; margin: 10px 0;">
+            <br>
+            <button class="btn-action" onclick="startGame()">MULAI!</button>
+        </div>
+    </div>
+
+    <script>
+        const stage = document.getElementById('game-stage');
+        const player = document.getElementById('fatih-player');
+        const scoreText = document.getElementById('score-text');
+        const progressFill = document.getElementById('progress-fill');
+        const overlay = document.getElementById('overlay');
+        const modalBody = document.getElementById('modal-body');
+
+        let score = 0;
+        let gameActive = false;
+        const targetScore = 100;
+        let lastTime = 0;
+        let spawnTimer = 0;
+
+        // --- SISTEM SUARA ---
+        const sfx = {
+            point: new Audio('sound/point.mp3'),
+            fail: new Audio('sound/fail.mp3'),
+            victory: new Audio('sound/victory.mp3')
+        };
+
+        function playSound(name) {
+            sfx[name].currentTime = 0;
+            sfx[name].play().catch(e => console.log("Audio play blocked"));
+        }
+
+        // --- INPUT HANDLING (MOBILE & DESKTOP) ---
+        const handleMove = (e) => {
+            if (!gameActive) return;
+            const x = e.touches ? e.touches[0].clientX : e.clientX;
+            const halfWidth = player.offsetWidth / 2;
+            const clampedX = Math.max(halfWidth, Math.min(window.innerWidth - halfWidth, x));
+            player.style.left = `${clampedX}px`;
+        };
+
+        window.addEventListener('mousemove', handleMove);
+        window.addEventListener('touchmove', handleMove, { passive: false });
+
+        function startGame() {
+            // Unblock audio context for browsers
+            Object.values(sfx).forEach(audio => {
+                audio.play().then(() => { audio.pause(); audio.currentTime = 0; }).catch(() => {});
+            });
+
+            overlay.style.display = 'none';
+            score = 0;
+            updateUI();
+            gameActive = true;
+            lastTime = performance.now();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function updateUI() {
+            scoreText.innerText = `Pahala: ${score} / ${targetScore}`;
+            progressFill.style.width = `${(score / targetScore) * 100}%`;
+        }
+
+        function gameLoop(timestamp) {
+            if (!gameActive) return;
+
+            const deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
+
+            spawnTimer += deltaTime;
+            if (spawnTimer > 900) { // Muncul setiap 0.9 detik
+                createItem();
+                spawnTimer = 0;
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function createItem() {
+            const items = [
+                {icon: '🌙', type: 'good'}, {icon: '📿', type: 'good'},
+                {icon: '🕌', type: 'good'}, {icon: '🤲', type: 'good'},
+                {icon: '🍩', type: 'bad'}, {icon: '🍦', type: 'bad'},
+                {icon: '🍫', type: 'bad'}, {icon: '🍕', type: 'bad'}
+            ];
+            const data = items[Math.floor(Math.random() * items.length)];
+            const el = document.createElement('div');
+            el.className = 'falling-item';
+            el.innerText = data.icon;
+            el.style.left = `${Math.random() * (window.innerWidth - 60) + 30}px`;
+            el.style.top = '-50px';
+            stage.appendChild(el);
+
+            let top = -50;
+            const fall = () => {
+                if (!gameActive) { el.remove(); return; }
+                top += 6.5; // Kecepatan jatuh
+                el.style.top = `${top}px`;
+
+                const pRect = player.getBoundingClientRect();
+                const iRect = el.getBoundingClientRect();
+
+                // Collision Detection Logic
+                if (iRect.bottom > pRect.top + 15 && iRect.right > pRect.left + 15 && 
+                    iRect.left < pRect.right - 15 && iRect.top < pRect.bottom) {
+                    
+                    if (data.type === 'good') {
+                        score += 10;
+                        playSound('point');
+                        updateUI();
+                        el.remove();
+                        if (score >= targetScore) winGame();
+                    } else {
+                        playSound('fail');
+                        loseGame();
+                    }
+                    return;
+                }
+
+                if (top > window.innerHeight) {
+                    el.remove();
+                } else {
+                    requestAnimationFrame(fall);
+                }
+            };
+            requestAnimationFrame(fall);
+        }
+
+        function winGame() {
+            gameActive = false;
+            playSound('victory');
+            overlay.style.display = 'flex';
+            modalBody.innerHTML = `
+                <h1 style="font-family: 'Fredoka One'; color: var(--grass-green);">MABRUK! 🥳</h1>
+                <span class="reward-badge">🏆</span>
+                <p>Hebat! Misi selesai. Kamu dapet <b>Pahala Full</b> hari ini!</p>
+                <button class="btn-action" onclick="location.reload()">MAIN LAGI</button>
+            `;
+        }
+
+        function loseGame() {
+            gameActive = false;
+            overlay.style.display = 'flex';
+            modalBody.innerHTML = `
+                <h1 style="font-family: 'Fredoka One'; color: var(--red);">YAAAH! 😡</h1>
+                <img src="assets/marah.png" style="width:110px; margin: 15px 0;" alt="Fatih Marah">
+                <p>Hati-hati! Jangan tergoda makanan dulu ya.</p>
+                <button class="btn-action" style="background:var(--red); box-shadow:0 5px 0 #922B21;" onclick="location.reload()">ULANGI</button>
+            `;
+        }
+    </script>
+</body>
+</html>
